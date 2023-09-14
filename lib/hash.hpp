@@ -82,6 +82,7 @@ class Hash_Map {
         void print_curmem();
         HistoryNode* insert(pair<boost::dynamic_bitset<>,int>& item,int prefix_cost,int lower_bound, unsigned thread_id, bool backtracked, unsigned depth);
         HistoryNode* retrieve(pair<boost::dynamic_bitset<>,int>& item,int key);
+        
 };
 
 #endif

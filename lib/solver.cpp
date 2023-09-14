@@ -74,6 +74,9 @@ static atomic<bool> exploit_init (false);
 ///////////Data Collection//////////////
 static vector<int_64> num_resume;
 static vector<int_64> num_stop;
+static std::chrono::_V2::system_clock::time_point start_time;
+static std::chrono::_V2::system_clock::time_point end_time;
+static std::chrono::_V2::system_clock::time_point initialization_end_time;
 
 ///////////Thread Stop//////////////////
 static deque<request_packet> request_buffer;
@@ -108,6 +111,22 @@ static bool enable_workstealing = false;
 static float pre_density = 0;
 static bool enable_threadstop = false;
 static bool enable_lkh = false;
+
+//Enhanced config variables (Read Only)
+static bool enable_enhanced_log = false;
+static int repeat_test = 1;
+static bool presolve_LKH = false;
+static int initial_best_cost = 0; //TODO
+
+//Enhanced log variables (Read Only)
+static string log_output_file_name = "null";
+static bool enable_report_value_names_log = false;
+static bool enable_multi_line_log = false;
+static bool enable_total_time_log = false;
+static bool enable_setup_time_log = false;
+static bool enable_branch_and_bound_time_log = false;
+static bool enable_best_cost_log = false;
+static bool enable_thread_count_log = false;
 
 //Shared resources
 std::chrono::time_point<std::chrono::system_clock> start_time_limit;
@@ -191,6 +210,49 @@ void solver::assign_parameter(vector<string> setting) {
     if (!atoi(setting[9].c_str())) enable_lkh = false;
     else enable_lkh = true;
 
+    if (setting.size() == 10) return;
+    
+    if(!atoi(setting[10].c_str())) return;
+
+    if (!atoi(setting[11].c_str())) enable_enhanced_log = false;
+    else enable_enhanced_log = true;
+
+    if (!atoi(setting[13].c_str())) presolve_LKH = false;
+    else presolve_LKH = true;
+
+    if(presolve_LKH) enable_lkh = false;
+
+    initial_best_cost = !atoi(setting[14].c_str());
+    
+}
+
+void solver::assign_log_parameter(vector<string> setting){
+    log_output_file_name = setting[0];
+
+    if (!atoi(setting[1].c_str())) enable_report_value_names_log = false;
+    else enable_report_value_names_log = true;
+
+    if (!atoi(setting[2].c_str())) enable_multi_line_log = false;
+    else enable_multi_line_log = true;
+
+    if (!atoi(setting[3].c_str())) enable_total_time_log = false;
+    else enable_total_time_log = true;
+
+    if (!atoi(setting[4].c_str())) enable_setup_time_log = false;
+    else enable_setup_time_log = true;
+
+    if (!atoi(setting[5].c_str())) enable_branch_and_bound_time_log = false;
+    else enable_branch_and_bound_time_log = true;
+
+    if (!atoi(setting[5].c_str())) enable_best_cost_log = false;
+    else enable_best_cost_log = true;
+
+    if (!atoi(setting[5].c_str())) enable_thread_count_log = false;
+    else enable_thread_count_log = true;
+
+    // if (!atoi(setting[5].c_str()))  = false;
+    // else  = true;
+   
     return;
 }
 
@@ -1989,17 +2051,19 @@ void solver::solve(string filename,int thread_num) {
     enumerated_nodes = vector<unsigned_long_64>(thread_total);
 
     if (enable_lkh) LKH_thread = thread(lkh);
-    
-    auto start_time = chrono::high_resolution_clock::now();
+    std::cout << presolve_LKH <<"---------------------------------------" << "\n";
+    if (presolve_LKH) lkh();
+            std::cout << "---------------------------------------" << "\n";
+    start_time = chrono::high_resolution_clock::now();
     solve_parallel(thread_total,global_pool_size);
-    auto end_time = chrono::high_resolution_clock::now();
+    end_time = chrono::high_resolution_clock::now();
 
     if (enable_lkh) if (LKH_thread.joinable()) LKH_thread.join();
 
     auto total_time = chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
     cout << "------------------------" << thread_total << " thread" << "------------------------------" << endl;
     cout << best_cost << "," << setprecision(4) << total_time / (float)(1000000) << endl;
-    
+    print_enhanced_log();
     
     /*
     for (int i = 0; i < thread_total; i++) {
@@ -2307,4 +2371,58 @@ vector<vector<int>> solver::get_cost_matrix(int max_edge_weight) {
     }
 
     return matrix;
+}
+ //best_cost << "," << setprecision(4) << total_time / (float)(1000000)
+
+void solver::print_enhanced_log(){
+    if(!enable_enhanced_log) return;
+    string newLine = " ";
+    if(enable_multi_line_log) newLine += "\n";
+
+    std::ofstream out(log_output_file_name, std::ios::app);
+    
+    std::streambuf *coutbuf = std::cout.rdbuf(); 
+    std::cout.rdbuf(out.rdbuf());
+
+    auto total_time = chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+    if(enable_total_time_log){
+        if(enable_report_value_names_log)
+            cout << "Total Time : ";
+        cout << setprecision(4) << total_time / (float)(1000000) << newLine;
+    }
+
+    auto setup_time = chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+    if(enable_setup_time_log){
+        if(enable_report_value_names_log)
+            cout << "Setup Time : ";
+        cout << setprecision(4) << setup_time / (float)(1000000) << newLine;
+    }
+    
+    auto bb_time = total_time - setup_time;
+    if(enable_branch_and_bound_time_log){
+        if(enable_report_value_names_log)
+            cout << "Branch and Bound Time : ";
+        cout << setprecision(4) << bb_time / (float)(1000000) << newLine;
+    }
+
+    if(enable_best_cost_log){
+        if(enable_report_value_names_log)
+            cout << "Best Cost : ";
+        cout << best_cost << newLine;    
+    }
+
+    if(enable_thread_count_log){
+        if(enable_report_value_names_log)
+            cout << "Thread Count : ";
+        cout << thread_total << newLine;    
+    }
+    cout << "\n";
+    // if(){
+    //     if(enable_report_value_names_log)
+    //         cout << " : ";
+    //     cout << "" << newLine;    
+    // }
+
+    std::cout.rdbuf(coutbuf);
+    return;
 }

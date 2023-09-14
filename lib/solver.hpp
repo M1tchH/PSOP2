@@ -234,8 +234,9 @@ class solver {
         deque<instrct_node> *local_pool = NULL;
         vector<recur_state> recur_stack;
         vector<vector<int>> get_cost_matrix(int max_edge_weight);
-        vector<int> nearest_neightbor(vector<int>* partial_solution);
         
+        vector<int> nearest_neightbor(vector<int> *partial_solution);
+
         Active_Allocator Allocator;
         Active_Path cur_active_tree;
         bool abandon_work = false;
@@ -306,6 +307,9 @@ class solver {
     public:
         void solve(string filename,int thread_num);
         void assign_parameter(vector<string> setting);
+        void print_enhanced_log();
+        void assign_log_parameter(vector<string> setting);
+        void reset_static_var();
 };
 
 #endif

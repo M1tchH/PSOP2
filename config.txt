@@ -27,3 +27,18 @@ Enable = 1
 
 //Run in parallel with LKH (1 for enable 0 for disable)
 Enable = 1
+
+//Enable enhanced testing options (1 for enable 0 for disable) X
+Enable = 1
+
+//Enable enhanced log (1 for enable 0 for disable) X
+Enable = 1
+
+//Run test multiple times (value greater than or equal to 1) 
+Runs = 5
+
+//Presolve LKH (1 for enable 0 for disable) 
+Enable = 0
+
+//Initial best value ( >= 1 for enable 0 for disable ) X
+Value = 0

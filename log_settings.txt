@@ -1,0 +1,23 @@
+//Output file name (null for console)
+file = out.txt
+
+//Report value names in log (1 for enable 0 for disable)
+Enable = 1
+
+//Single line / multi line (0 for single line 1 for multi line)
+Enable = 0
+
+//Total time (1 for enable 0 for disable)
+Enable = 1
+
+//Setup time (1 for enable 0 for disable)
+Enable = 1
+
+//Branch and bound time (1 for enable 0 for disable)
+Enable = 1
+
+//Best cost (1 for enable 0 for disable)
+Enable = 1
+
+//Thread count  (1 for enable 0 for disable)
+Enable = 1

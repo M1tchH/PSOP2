@@ -1,0 +1,5 @@
+Total Time : 0.1806 Setup Time : 0.1806 Branch and Bound Time : 0 Best Cost : 4216 Thread Count : 31 
+Total Time : 0.1723 Setup Time : 0.1723 Branch and Bound Time : 0 Best Cost : 4216 Thread Count : 31 
+Total Time : 0.1653 Setup Time : 0.1653 Branch and Bound Time : 0 Best Cost : 4216 Thread Count : 31 
+Total Time : 0.1847 Setup Time : 0.1847 Branch and Bound Time : 0 Best Cost : 4216 Thread Count : 31 
+Total Time : 0.1607 Setup Time : 0.1607 Branch and Bound Time : 0 Best Cost : 4216 Thread Count : 31 

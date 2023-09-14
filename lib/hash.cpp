@@ -218,3 +218,4 @@ HistoryNode* Hash_Map::retrieve(pair<boost::dynamic_bitset<>,int>& item,int key)
 
     return NULL;
 }
+
